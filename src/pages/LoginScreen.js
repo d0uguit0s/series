@@ -7,7 +7,10 @@ export default function LoginScreen() {
     return (
         <View>
             <FormRow>
-                <TextInput  />
+                <TextInput />
+            </FormRow>
+            <FormRow>
+                <TextInput />
             </FormRow>
         </View>
     );
