@@ -15,6 +15,6 @@ const styles = StyleSheet.create({
         padding: 10,
         backgroundColor: '#fff',
         marginVertical: 5,
-        elevation: 1
+        elevation: 1,
     }
 })
