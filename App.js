@@ -2,7 +2,8 @@ import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import LoginPage from './src/pages/LoginPage'
+import LoginPage from './src/pages/LoginPage';
+import SeriesPage from './src/pages/SeriesPage';
 
 const Stack = createStackNavigator();
 
@@ -38,6 +39,10 @@ export default function App() {
 							title: 'Bem Vindo!',
 						}
 					}
+				/>
+				<Stack.Screen
+					name="Main"
+					component={SeriesPage}
 				/>
 			</Stack.Navigator>
 		</NavigationContainer>

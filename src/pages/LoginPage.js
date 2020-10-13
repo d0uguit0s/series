@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     TextInput,
@@ -10,22 +10,18 @@ import {
 } from 'react-native';
 import firebase from '@firebase/app';
 import '@firebase/auth';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 
 import FormRow from '../components/FormRow'
 
-export default class LoginPage extends React.Component {
-    constructor(props){
-        super(props)
+export default function LoginPage({ navigation }) {
+    const [mail, setMail] = useState('');
+    const [password, setPassword] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [message, setMessage] = useState('');
 
-        this.state = {
-            mail: '',
-            password: '',
-            isLoading: false,
-            message: '',
-        }
-    }
-
-    componentDidMount() {
+    useEffect(() => {
         // Your web app's Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyB0GJuEIAA9QIvFfggtr_3xHMuqEQUSgxw",
@@ -40,32 +36,19 @@ export default class LoginPage extends React.Component {
         if(firebase.apps.length === 0) {
             firebase.initializeApp(firebaseConfig);
         }
-    }
+    });
 
-    onCHangeHandler(field, value) {
-        // ANTIGO
-        // const newState = {};
-        // newState[field] = value;
-        // this.setState(newState);
-
-        // NOVO
-        this.setState({
-            [field]: value
-        });
-    }
-
-    tryLogin() {
-        this.setState({ isLoading: true, message: '' })
-        const { mail, password } = this.state;
+    function tryLogin() {
+        setIsLoading(true);
+        setMessage('');
 
         const loginUserSuccess = user => {
-            this.setState({ message: 'Sucesso!' });
+            setMessage('Sucesso!');
+            navigation.navigate('Main');
         }
 
         const loginUserFailed = error => {
-            this.setState({
-                message: this.getMessageByErrorCode(error.code)
-            });
+            setMessage(getMessageByErrorCode(error.code));
         }
 
         firebase
@@ -95,14 +78,14 @@ export default class LoginPage extends React.Component {
                         { cancelable: false }
                     )
                 }else{
-                    loginUserFailed
+                    loginUserFailed(error)
                 }
                 // console.log('Usuário NÂO encontrado', error);
             })
-            .then(() => this.setState({ isLoading: false }));
+            .then(setIsLoading(false))
     }
 
-    getMessageByErrorCode(errorCode) {
+    function getMessageByErrorCode(errorCode) {
         /*
         auth/wrong-password
         auth/user-not-found
@@ -120,20 +103,20 @@ export default class LoginPage extends React.Component {
         }
     }
 
-    renderButton() {
-        if (this.state.isLoading)
-            return <ActivityIndicator />;
-        
+    function RenderButton() {
+        if (isLoading){
+            return <ActivityIndicator />
+        }
+
         return (
             <Button
                 title='Entrar'
-                onPress={() => this.tryLogin()}    
+                onPress={() => tryLogin()}    
             />
         )
     }
 
-    renderMessage() {
-        const { message } = this.state;
+    function renderMessage() {
         if(!message)
             return null;
         
@@ -146,32 +129,30 @@ export default class LoginPage extends React.Component {
         )
     }
 
-    render() {
-        return (
-            <View style={styles.container}>
-                <FormRow first >
-                    <TextInput
-                        style={styles.input}
-                        placeholder='user_exemplo@email.com'
-                        value={this.state.mail}
-                        onChangeText={value => this.onCHangeHandler('mail', value)}
-                    />
-                </FormRow>
-                <FormRow last>
-                    <TextInput
-                        style={styles.input}
-                        placeholder='**************'
-                        secureTextEntry
-                        value={this.state.password}
-                        onChangeText={value => this.onCHangeHandler('password', value)}
-                    />
-                </FormRow>
+    return (
+        <View style={styles.container}>
+            <FormRow first >
+                <TextInput
+                    style={styles.input}
+                    placeholder='user_exemplo@email.com'
+                    value={mail}
+                    onChangeText={value => setMail(value)}
+                />
+            </FormRow>
+            <FormRow last>
+                <TextInput
+                    style={styles.input}
+                    placeholder='**************'
+                    secureTextEntry
+                    value={password}
+                    onChangeText={value => setPassword(value)}
+                />
+            </FormRow>
 
-                { this.renderButton() }
-                { this.renderMessage() }
-            </View>
-        );
-    }
+            { RenderButton() }
+            { renderMessage() }
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
